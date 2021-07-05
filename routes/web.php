@@ -17,7 +17,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['middleware' => ['log'], 'prefix' => 'api/users'], function () use ($router) {
+$router->group(['middleware' => ['log'], 'prefix' => 'api'], function () use ($router) {
     $router->get('users', [
         'as' => 'all-users', 'uses' => 'UserController@index'
     ]);

@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Log;
 
-class ExampleMiddleware
+class LogMiddleware
 {
     /**
      * Handle an incoming request.
