@@ -16,3 +16,25 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix' => 'api/users'], function() use ($router) {
+    $router->get('users', [
+        'as' => 'all-users', 'uses' => 'UserController@index'
+    ]);
+    
+    $router->get('users/{id}', [
+        'as' => 'single-users', 'uses' => 'UserController@show'
+    ]);
+    
+    $router->post('users', [
+        'as' => 'create-users', 'uses' => 'UserController@create'
+    ]);
+    
+    $router->put('users/{id}', [
+        'as' => 'update-users', 'uses' => 'UserController@update'
+    ]);
+    
+    $router->delete('users/{id}', [
+        'as' => 'delete-users', 'uses' => 'UserController@destroy'
+    ]);
+});
