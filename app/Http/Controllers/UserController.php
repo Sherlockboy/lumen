@@ -14,7 +14,11 @@ class UserController extends Controller
 
     public function show($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json("User not found!", 404);
+        }
 
         return response()->json($user, 200);
     }
@@ -23,10 +27,15 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|email'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6'
         ]);
-        
-        $user = User::create($request->only('name', 'email'));
+
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => app('hash')->make($request->input('password'))
+        ]);
 
         return response()->json($user, 201);
     }
@@ -34,18 +43,29 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'required|string',
-            'email' => 'required|email'
+            'name' => 'required|string'
         ]);
-        
-        User::findOrFail($id)->update($request->only('name', 'email'));
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json("User not found!", 404);
+        }
+
+        $user->update($request->only('name'));
 
         return response()->json("Updated!", 200);
     }
 
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json("User not found!", 404);
+        }
+
+        $user->delete();
 
         return response()->json("Deleted!", 200);
     }
