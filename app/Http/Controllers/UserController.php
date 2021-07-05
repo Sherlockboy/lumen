@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::all(), 200);
+        return response()->json(User::all('id', 'name', 'email'), 200);
     }
 
     public function show($id)
@@ -21,16 +21,26 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $user = User::create($request->all());
+        $this->validate($request, [
+            'name' => 'required|string',
+            'email' => 'required|email'
+        ]);
+        
+        $user = User::create($request->only('name', 'email'));
 
         return response()->json($user, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id)->update($request->all());
+        $this->validate($request, [
+            'name' => 'required|string',
+            'email' => 'required|email'
+        ]);
+        
+        User::findOrFail($id)->update($request->only('name', 'email'));
 
-        return response()->json($user, 200);
+        return response()->json("Updated!", 200);
     }
 
     public function destroy($id)
