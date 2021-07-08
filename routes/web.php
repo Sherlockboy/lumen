@@ -17,24 +17,21 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['middleware' => ['log'], 'prefix' => 'api'], function () use ($router) {
-    $router->get('users', [
-        'as' => 'all-users', 'uses' => 'UserController@index'
-    ]);
+$router->post('login', ['uses' => 'AuthController@login']);
 
-    $router->get('users/{id}', [
-        'as' => 'single-users', 'uses' => 'UserController@show'
-    ]);
+$router->group(['middleware' => 'auth', 'prefix' => 'api'], function () use ($router) {
 
-    $router->post('users', [
-        'as' => 'create-users', 'uses' => 'UserController@create'
-    ]);
+    $router->group(['prefix' => 'auth'], function () use ($router) {
+        $router->post('logout', ['uses' => 'AuthController@logout']);
+        $router->post('refresh', ['uses' => 'AuthController@refresh']);
+        $router->post('me', ['uses' => 'AuthController@me']);
+    });
 
-    $router->put('users/{id}', [
-        'as' => 'update-users', 'uses' => 'UserController@update'
-    ]);
-
-    $router->delete('users/{id}', [
-        'as' => 'delete-users', 'uses' => 'UserController@destroy'
-    ]);
+    $router->group(['prefix' => 'users'], function () use ($router) {
+        $router->get('/', ['uses' => 'UserController@index']);
+        $router->get('/{id}', ['uses' => 'UserController@show']);
+        $router->post('/', ['uses' => 'UserController@create']);
+        $router->put('/{id}', ['uses' => 'UserController@update']);
+        $router->delete('/{id}', ['uses' => 'UserController@destroy']);
+    });
 });
